@@ -1,0 +1,28 @@
+---
+
+- name: reboot
+  command: shutdown -r now "ansible updates triggered"
+  async: 1
+  poll: 0
+
+- name: wait to stop ssh
+  shell:
+    for i in $(seq 1 {{ timeout }}); do
+      ssh {{ ansible_ssh_common_args }} {{ inventory_hostname }} hostname || break;
+      sleep 1;
+    done
+  vars:
+    timeout: 20
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: wait to start ssh
+  shell:
+    for i in $(seq 1 {{ timeout }}); do
+      ssh {{ ansible_ssh_common_args }} {{ inventory_hostname }} hostname && break;
+      sleep 1;
+    done
+  vars:
+    timeout: 100
+  delegate_to: 127.0.0.1
+  become: false

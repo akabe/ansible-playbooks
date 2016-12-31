@@ -1,0 +1,21 @@
+---
+
+- name: yum upgrade
+  yum: name=* state=latest
+
+- name: stop extra service
+  service: name="{{ item }}" state=stopped enabled=false
+  with_items:
+    - sendmail
+    - crond
+    - ip6tables
+
+- name: disable tty
+  lineinfile:
+    dest: /etc/sysconfig/init
+    line: ACTIVE_CONSOLES=/dev/tty[1-1]
+    regexp: ACTIVE_CONSOLES=/dev/tty.*
+  notify:
+    - reboot
+    - wait to stop ssh
+    - wait to start ssh
