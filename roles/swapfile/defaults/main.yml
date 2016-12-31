@@ -1,0 +1,7 @@
+---
+
+swapfile_path: /swap
+
+## The total size of swap space = swapfile_block_size * swapfile_block_count
+swapfile_block_size: 1024
+swapfile_block_count: "{{ (1024 * 1024 * 4) | int | abs }}"

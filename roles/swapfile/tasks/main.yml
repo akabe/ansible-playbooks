@@ -1,0 +1,27 @@
+---
+
+- name: allocate swap file
+  shell:
+    dd if=/dev/zero
+       of={{ swapfile_path }}
+       bs={{ swapfile_block_size }}
+       count={{ swapfile_block_count }};
+    mkswap {{ swapfile_path }};
+    swapon {{ swapfile_path }}
+  args:
+    creates: '{{ swapfile_path }}'
+
+- name: chmod swap file
+  file:
+    path: '{{ swapfile_path }}'
+    mode: 0600
+
+- name: mount swap
+  mount:
+    name: swap
+    src: '{{ swapfile_path }}'
+    fstype: swap
+    opts: defaults
+    passno: 0
+    dump: 0
+    state: present
