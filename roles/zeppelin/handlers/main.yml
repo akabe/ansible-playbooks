@@ -1,0 +1,5 @@
+---
+
+- name: restart zeppelin
+  command: "{{ zeppelin_home }}/bin/zeppelin-daemon.sh restart"
+  become_user: "{{ zeppelin_user }}"

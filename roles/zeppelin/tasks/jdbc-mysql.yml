@@ -1,0 +1,22 @@
+---
+
+- name: download MySQL JDBC driver
+  get_url:
+    url: "http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-{{ zeppelin_jdbc_mysql_version }}.tar.gz"
+    dest: "/tmp/mysql-connector-java-{{ zeppelin_jdbc_mysql_version }}.tar.gz"
+    checksum: sha256:668330de57485999cdbbcad22ea21159a0fc3711f11ccbca7b12b65195fa7539
+  register: zeppelin_jdbc_mysql_download_result
+
+- name: unarchive MySQL JDBC driver
+  unarchive:
+    src: "{{ zeppelin_jdbc_mysql_download_result.dest }}"
+    dest: "/tmp"
+    remote_src: true
+
+- name: put MySQL JDBC driver
+  copy:
+    src: "/tmp/mysql-connector-java-{{ zeppelin_jdbc_mysql_version }}/mysql-connector-java-{{ zeppelin_jdbc_mysql_version }}-bin.jar"
+    dest: "{{ zeppelin_interpreter_dir }}/jdbc"
+    owner: "{{ zeppelin_user }}"
+    group: "{{ zeppelin_group }}"
+    remote_src: true

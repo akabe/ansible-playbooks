@@ -1,0 +1,62 @@
+---
+
+zeppelin_user: zeppelin
+zeppelin_group: zeppelin
+
+zeppelin_version: 0.6.2
+zeppelin_dist: "zeppelin-{{ zeppelin_version }}-bin-netinst"
+zeppelin_install_dir: /opt
+zeppelin_home: "{{ zeppelin_install_dir }}/{{ zeppelin_dist }}"
+zeppelin_lib_dir: "{{ zeppelin_home }}/lib"
+zeppelin_pid_dir: "{{ zeppelin_home }}/run"
+zeppelin_conf_dir: "{{ zeppelin_home }}/conf"
+zeppelin_interpreter_dir: "{{ zeppelin_home }}/interpreter"
+
+##
+## Shiro
+##
+
+# anon means the access is anonymous.
+# authcBasic means Basic Auth Security
+# authc means Form based Auth Security
+zeppelin_urls:
+  - url: '/**'
+    auth: authc
+    roles: []
+
+zeppelin_roles:
+  - name: role1
+    role: '*'
+  - name: role2
+    role: '*'
+  - name: role3
+    role: '*'
+
+## Use SHA512-encoded passwords: echo -n 'your_passowrd' | sha256sum
+zeppelin_users:
+  - name: admin
+    password: bc547750b92797f955b36112cc9bdd5cddf7d0862151d03a167ada8995aa24a9ad24610b36a68bc02da24141ee51670aea13ed6469099a4453f335cb239db5da # password1
+    roles: []
+  - name: user1
+    password: 92a891f888e79d1c2e8b82663c0f37cc6d61466c508ec62b8132588afe354712b20bb75429aa20aa3ab7cfcc58836c734306b43efd368080a2250831bf7f363f # password2
+    roles:
+      - role1
+      - role2
+
+##
+## Interpreters
+##
+
+## Interpreters to be manually installed.
+zeppelin_interpreters:
+  - name: md
+  - name: jdbc
+  - name: python
+
+## JDBC configuration
+zeppelin_jdbc_max_count: 1000
+zeppelin_jdbc_max_connection: 10
+zeppelin_jdbc_mysql_version: 5.1.40
+zeppelin_jdbc_mysql_url: jdbc:mysql://localhost:3306/
+zeppelin_jdbc_mysql_user: root
+zeppelin_jdbc_mysql_password: ""

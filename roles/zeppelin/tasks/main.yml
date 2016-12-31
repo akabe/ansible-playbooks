@@ -1,0 +1,59 @@
+---
+
+- name: create user group
+  group: name="{{ zeppelin_group }}"
+
+- name: create user
+  user:
+    name: "{{ zeppelin_user }}"
+    group: "{{ zeppelin_group }}"
+    createhome: false
+
+- name: download zeppelin
+  get_url:
+    url: "http://www-us.apache.org/dist/zeppelin/zeppelin-{{ zeppelin_version }}/{{ zeppelin_dist }}.tgz"
+    dest: "/tmp/{{ zeppelin_dist }}.tgz"
+    checksum: sha256:92192354d2ff4f007e8d2ac3f45c1f3a6aec896cf886f3b090945fee94065617
+  register: zeppelin_download_result
+
+- name: check existence
+  stat: path="{{ zeppelin_home }}"
+  register: zeppelin_home_stat
+
+- name: unarchive zeppelin
+  unarchive:
+    src: "{{ zeppelin_download_result.dest }}"
+    dest: "{{ zeppelin_install_dir }}"
+    owner: "{{ zeppelin_user }}"
+    group: "{{ zeppelin_group }}"
+    remote_src: true
+  when: zeppelin_home_stat.stat.exists == False
+
+- name: start zeppelin
+  command: "{{ zeppelin_home }}/bin/zeppelin-daemon.sh start"
+  become_user: "{{ zeppelin_user }}"
+  args:
+    creates: "{{ zeppelin_pid_dir }}/*"
+
+- name: copy config files
+  template:
+    src: "{{ item }}"
+    dest: "{{ zeppelin_conf_dir }}/{{ item }}"
+    owner: "{{ zeppelin_user }}"
+    group: "{{ zeppelin_group }}"
+    mode: 0600
+  with_items:
+    - zeppelin-site.xml
+    - shiro.ini
+    - interpreter.json
+  notify: restart zeppelin
+
+- name: install interpreters
+  command: "{{ zeppelin_home }}/bin/install-interpreter.sh --name {{ item.name }}"
+  args:
+    creates: "{{ zeppelin_interpreter_dir }}/{{ item.name }}"
+  become_user: "{{ zeppelin_user }}"
+  with_items: "{{ zeppelin_interpreters }}"
+  notify: restart zeppelin
+
+- include: jdbc-mysql.yml

@@ -1,0 +1,186 @@
+{
+  "interpreterSettings": {
+    "2C55ASCVW": {
+      "id": "2C55ASCVW",
+      "name": "spark",
+      "group": "spark",
+      "properties": {
+        "spark.executor.memory": "",
+        "args": "",
+        "zeppelin.spark.printREPLOutput": "true",
+        "spark.cores.max": "",
+        "zeppelin.dep.additionalRemoteRepository": "spark-packages,http://dl.bintray.com/spark-packages/maven,false;",
+        "zeppelin.spark.sql.stacktrace": "false",
+        "zeppelin.spark.importImplicit": "true",
+        "zeppelin.spark.concurrentSQL": "false",
+        "zeppelin.spark.useHiveContext": "true",
+        "zeppelin.pyspark.python": "python",
+        "zeppelin.dep.localrepo": "local-repo",
+        "zeppelin.R.knitr": "true",
+        "zeppelin.spark.maxResult": "1000",
+        "master": "local[*]",
+        "spark.app.name": "Zeppelin",
+        "zeppelin.R.image.width": "100%",
+        "zeppelin.R.render.options": "out.format \u003d \u0027html\u0027, comment \u003d NA, echo \u003d FALSE, results \u003d \u0027asis\u0027, message \u003d F, warning \u003d F",
+        "zeppelin.R.cmd": "R"
+      },
+      "interpreterGroup": [
+        {
+          "class": "org.apache.zeppelin.spark.SparkInterpreter",
+          "name": "spark"
+        },
+        {
+          "class": "org.apache.zeppelin.spark.PySparkInterpreter",
+          "name": "pyspark"
+        },
+        {
+          "class": "org.apache.zeppelin.spark.SparkRInterpreter",
+          "name": "r"
+        },
+        {
+          "class": "org.apache.zeppelin.spark.SparkSqlInterpreter",
+          "name": "sql"
+        },
+        {
+          "class": "org.apache.zeppelin.spark.DepInterpreter",
+          "name": "dep"
+        }
+      ],
+      "dependencies": [],
+      "option": {
+        "remote": true,
+        "perNoteSession": false,
+        "perNoteProcess": false,
+        "isExistingProcess": false
+      }
+    },
+    "2C69PA562": {
+      "id": "2C69PA562",
+      "name": "md",
+      "group": "md",
+      "properties": {},
+      "interpreterGroup": [
+        {
+          "class": "org.apache.zeppelin.markdown.Markdown",
+          "name": "md"
+        }
+      ],
+      "dependencies": [],
+      "option": {
+        "remote": true,
+        "perNoteSession": false,
+        "perNoteProcess": false,
+        "isExistingProcess": false
+      }
+    },
+    "2C72UV61R": {
+      "id": "2C72UV61R",
+      "name": "jdbc",
+      "group": "jdbc",
+      "properties": {
+        "common.max_count": "{{ zeppelin_jdbc_max_count }}",
+        "default.driver": "org.postgresql.Driver",
+        "default.password": "",
+        "default.url": "jdbc:postgresql://localhost:5432/",
+        "default.user": "gpadmin",
+        "mysql.driver": "com.mysql.jdbc.Driver",
+        "mysql.password": "{{ zeppelin_jdbc_mysql_password }}",
+        "mysql.url": "{{ zeppelin_jdbc_mysql_url }}",
+        "mysql.user": "{{ zeppelin_jdbc_mysql_user }}",
+        "hive.driver": "org.apache.hive.jdbc.HiveDriver",
+        "hive.password": "",
+        "hive.url": "jdbc:hive2://localhost:10000",
+        "hive.user": "hive",
+        "phoenix.driver": "org.apache.phoenix.jdbc.PhoenixDriver",
+        "phoenix.hbase.client.retries.number": "1",
+        "phoenix.password": "",
+        "phoenix.url": "jdbc:phoenix:localhost:2181:/hbase-unsecure",
+        "phoenix.user": "phoenixuser",
+        "psql.driver": "org.postgresql.Driver",
+        "psql.password": "",
+        "psql.url": "jdbc:postgresql://localhost:5432/",
+        "psql.user": "phoenixuser",
+        "tajo.driver": "org.apache.tajo.jdbc.TajoDriver",
+        "tajo.url": "jdbc:tajo://localhost:26002/default",
+        "zeppelin.jdbc.concurrent.max_connection": "{{ zeppelin_jdbc_max_connection }}",
+        "zeppelin.jdbc.concurrent.use": "true"
+      },
+      "interpreterGroup": [
+        {
+          "class": "org.apache.zeppelin.jdbc.JDBCInterpreter",
+          "name": "sql"
+        }
+      ],
+      "dependencies": [
+        {
+          "groupArtifactVersion": "mysql:mysql-connector-java:{{ zeppelin_jdbc_mysql_version }}",
+          "local": false
+        }
+      ],
+      "option": {
+        "remote": true,
+        "perNoteSession": false,
+        "perNoteProcess": false,
+        "isExistingProcess": false
+      }
+    },
+    "2C647F7Y9": {
+      "id": "2C647F7Y9",
+      "name": "python",
+      "group": "python",
+      "properties": {
+        "zeppelin.python": "python"
+      },
+      "interpreterGroup": [
+        {
+          "class": "org.apache.zeppelin.python.PythonInterpreter",
+          "name": "python"
+        }
+      ],
+      "dependencies": [],
+      "option": {
+        "remote": true,
+        "perNoteSession": false,
+        "perNoteProcess": false,
+        "isExistingProcess": false
+      }
+    }
+  },
+  "interpreterBindings": {},
+  "interpreterRepositories": [
+    {
+      "id": "central",
+      "type": "default",
+      "url": "http://repo1.maven.org/maven2/",
+      "releasePolicy": {
+        "enabled": true,
+        "updatePolicy": "daily",
+        "checksumPolicy": "warn"
+      },
+      "snapshotPolicy": {
+        "enabled": true,
+        "updatePolicy": "daily",
+        "checksumPolicy": "warn"
+      },
+      "mirroredRepositories": [],
+      "repositoryManager": false
+    },
+    {
+      "id": "local",
+      "type": "default",
+      "url": "file:///home/zeppelin/.m2/repository",
+      "releasePolicy": {
+        "enabled": true,
+        "updatePolicy": "daily",
+        "checksumPolicy": "warn"
+      },
+      "snapshotPolicy": {
+        "enabled": true,
+        "updatePolicy": "daily",
+        "checksumPolicy": "warn"
+      },
+      "mirroredRepositories": [],
+      "repositoryManager": false
+    }
+  ]
+}

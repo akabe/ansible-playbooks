@@ -1,0 +1,9 @@
+---
+
+- hosts: zeppelin
+  gather_facts: true
+  become: true
+  roles:
+    - linux-tuning
+    - swapfile
+    - zeppelin
