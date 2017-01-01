@@ -1,0 +1,141 @@
+---
+
+- name: yum upgrade
+  yum: name=* state=latest
+
+- name: yum install
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc
+    - openssl-devel
+    - lz4-devel
+    - lzo-devel
+    - pam-devel
+
+- name: create user group
+  group: name="{{ openvpn_group }}"
+
+- name: create user
+  user:
+    name: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    createhome: false
+
+- name: download tarball
+  get_url:
+    url: "https://swupdate.openvpn.org/community/releases/openvpn-{{ openvpn_version }}.tar.xz"
+    dest: "/tmp/openvpn-{{ openvpn_version }}.tar.xz"
+    checksum: sha256:6f23ba49a1dbeb658f49c7ae17d9ea979de6d92c7357de3d55cd4525e1b2f87e
+
+- name: unarchive tarball
+  unarchive:
+    src: "/tmp/openvpn-{{ openvpn_version }}.tar.xz"
+    dest: "/usr/local/src"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    remote_src: true
+
+- name: configure
+  command: "./configure --prefix={{ openvpn_prefix }}"
+  args:
+    chdir: "{{ openvpn_src_dir }}"
+    creates: "{{ openvpn_src_dir }}/src/Makefile"
+  become_user: "{{ openvpn_user }}"
+
+- name: make
+  command: make
+  args:
+    chdir: "{{ openvpn_src_dir }}"
+    creates: "{{ openvpn_src_dir }}/src/openvpn/openvpn"
+  become_user: "{{ openvpn_user }}"
+
+- name: make install
+  command: make install
+  args:
+    chdir: "{{ openvpn_src_dir }}"
+    creates: "{{ openvpn_prefix }}/sbin/openvpn"
+
+- name: create openvpn home
+  file:
+    state: directory
+    path: "{{ openvpn_home }}"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+
+- name: install openvpn service
+  copy:
+    src: "{{ openvpn_src_dir }}/distro/rpm/openvpn.init.d.rhel"
+    dest: /etc/init.d/openvpn
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    mode: 0755
+    remote_src: true
+
+# - yum: name=* state=latest
+
+# - yum: name={{ item }} state=present
+#   with_items:
+#     - openvpn
+#     - expect
+
+# - name: create user group
+#   group: name="{{ openvpn_group }}"
+
+# - name: create user
+#   user:
+#     name: "{{ openvpn_user }}"
+#     group: "{{ openvpn_group }}"
+#     createhome: false
+
+# - name: chmod {{ openvpn_home }}
+#   file:
+#     state: directory
+#     path: "{{ openvpn_home }}"
+#     owner: "{{ openvpn_user }}"
+#     group: "{{ openvpn_group }}"
+#     mode: 0755
+
+# - name: download easy-rsa
+#   get_url:
+#     url: "https://github.com/OpenVPN/easy-rsa/archive/{{ openvpn_easyrsa_version }}.tar.gz"
+#     dest: "/tmp/easy-rsa-{{ openvpn_easyrsa_version }}.tar.gz"
+#     checksum: sha256:a1fff75a27ea7da3f37fbfed715633f55b9ca25f5b14cac38e525c5c995e68ae
+#   register: openvpn_easyrsa_download_result
+
+# - name: unarchive easy-rsa
+#   unarchive:
+#     src: "{{ openvpn_easyrsa_download_result.dest }}"
+#     dest: "/tmp"
+#     owner: "{{ openvpn_user }}"
+#     group: "{{ openvpn_group }}"
+#     remote_src: true
+
+# - name: copy easy-rsa
+#   command: cp -r "/tmp/easy-rsa-{{ openvpn_easyrsa_version }}/easyrsa3" "{{ openvpn_home }}"
+#   args:
+#     creates: "{{ openvpn_easyrsa_home }}"
+#   become_user: "{{ openvpn_user }}"
+
+# - name: initialize easy-rsa
+#   command: ./easyrsa init-pki
+#   args:
+#     chdir: "{{ openvpn_easyrsa_home }}"
+#     creates: "{{ openvpn_easyrsa_home }}/pki"
+#   become_user: "{{ openvpn_user }}"
+
+# - name: build ca
+#   command: |-
+#     expect -c \
+#     'set timeout 5
+#     spawn ./easyrsa build-ca
+#     expect "Enter PEM pass phrase:"
+#     send "{{ openvpn_easyrsa_pem_password }}\n"
+#     expect "Enter PEM pass phrase:"
+#     send "{{ openvpn_easyrsa_pem_password }}\n"
+#     expect "\[Easy-RSA CA\]:"
+#     send "{{ openvpn_easyrsa_domain }}\n"
+#     exit 0'
+#   args:
+#     chdir: "{{ openvpn_easyrsa_home }}/"
+#     creates: "{{ openvpn_easyrsa_home }}/pki/ca.crt"
+#   become_user: "{{ openvpn_user }}"

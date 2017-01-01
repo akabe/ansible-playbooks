@@ -1,0 +1,16 @@
+---
+
+- name: generate ta.key
+  command: "{{ openvpn_prefix }}/sbin/openvpn --genkey --secret {{ openvpn_home }}/ta.key"
+  args:
+    chdir: "{{ openvpn_home }}"
+    creates: "{{ openvpn_home }}/ta.key"
+  become_user: "{{ openvpn_user }}"
+
+- name: copy config files
+  template:
+    src: server.conf
+    dest: "{{ openvpn_home }}"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+  notify: restart openvpn

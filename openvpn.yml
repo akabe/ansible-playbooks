@@ -1,0 +1,9 @@
+---
+
+- hosts: openvpn
+  gather_facts: true
+  become: true
+  roles:
+    - openvpn
+    - easy-rsa
+    - openvpn-server

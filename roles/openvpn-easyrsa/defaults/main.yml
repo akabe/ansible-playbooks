@@ -1,0 +1,4 @@
+---
+
+easyrsa_version: 3.0.1
+easyrsa_src_dir: "/tmp/easy-rsa-{{ easyrsa_version }}/easyrsa3"

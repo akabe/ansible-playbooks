@@ -1,0 +1,9 @@
+---
+
+openvpn_user: openvpn
+openvpn_group: openvpn
+
+openvpn_version: 2.4.0
+openvpn_prefix: /usr/local
+openvpn_src_dir: /usr/local/src/openvpn-{{ openvpn_version }}
+openvpn_home: /etc/openvpn

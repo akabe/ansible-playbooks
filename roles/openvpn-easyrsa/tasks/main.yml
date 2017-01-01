@@ -1,0 +1,23 @@
+---
+
+- name: download easy-rsa
+  get_url:
+    url: "https://github.com/OpenVPN/easy-rsa/archive/{{ easyrsa_version }}.tar.gz"
+    dest: "/tmp/easy-rsa-{{ easyrsa_version }}.tar.gz"
+    checksum: sha256:a1fff75a27ea7da3f37fbfed715633f55b9ca25f5b14cac38e525c5c995e68ae
+  register: easyrsa_download_result
+
+- name: unarchive easy-rsa
+  unarchive:
+    src: "{{ easyrsa_download_result.dest }}"
+    dest: "/tmp"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    remote_src: true
+
+- name: initialize easy-rsa
+  command: ./easyrsa init-pki
+  args:
+    chdir: "{{ easyrsa_src_dir }}"
+    creates: "{{ easyrsa_src_dir }}/pki"
+  become_user: "{{ openvpn_user }}"

@@ -1,0 +1,81 @@
+---
+
+- name: download easy-rsa
+  get_url:
+    url: "https://github.com/OpenVPN/easy-rsa/archive/{{ easyrsa_version }}.tar.gz"
+    dest: "/tmp/easy-rsa-{{ easyrsa_version }}.tar.gz"
+    checksum: sha256:a1fff75a27ea7da3f37fbfed715633f55b9ca25f5b14cac38e525c5c995e68ae
+  register: easyrsa_download_result
+
+- name: unarchive easy-rsa
+  unarchive:
+    src: "{{ easyrsa_download_result.dest }}"
+    dest: /usr/local/src
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    remote_src: true
+
+- name: copy easy-rsa
+  command: cp -r "{{ easyrsa_src_dir }}/easyrsa3" "{{ openvpn_home }}"
+  args:
+    creates: "{{ easyrsa_home }}"
+  become_user: "{{ openvpn_user }}"
+
+- name: init pki
+  command: ./easyrsa init-pki
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}"
+  become_user: "{{ openvpn_user }}"
+
+- name: build master key
+  command: |-
+    expect -c \
+    'set timeout 5
+    spawn ./easyrsa build-ca
+    expect "pass phrase:"
+    send "{{ easyrsa_master_key_password }}\n"
+    expect "pass phrase:"
+    send "{{ easyrsa_master_key_password }}\n"
+    expect "\[Easy-RSA CA\]:"
+    send "{{ easyrsa_master_key_common_name }}\n"
+    expect eof
+    exit 0'
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/private/ca.key"
+  become_user: "{{ openvpn_user }}"
+
+- name: build server key
+  command: |-
+    expect -c \
+    'set timeout 5
+    spawn ./easyrsa build-server-full server nopass
+    expect "private/ca.key:"
+    send "{{ easyrsa_master_key_password }}\n"
+    expect eof
+    interact'
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/private/server.key"
+  become_user: "{{ openvpn_user }}"
+
+- name: generate Diffie Hellman parameter
+  command: ./easyrsa gen-dh
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/dh.pem"
+  become_user: "{{ openvpn_user }}"
+
+- name: copy keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ openvpn_home }}"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    remote_src: true
+  with_items:
+    - "{{ easyrsa_pki_dir }}/ca.crt"
+    - "{{ easyrsa_pki_dir }}/dh.pem"
+    - "{{ easyrsa_pki_dir }}/private/server.key"
+    - "{{ easyrsa_pki_dir }}/issued/server.crt"
