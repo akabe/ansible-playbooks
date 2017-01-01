@@ -1,0 +1,5 @@
+---
+
+openvpn_servers:
+  - host: 52.196.253.28
+    port: 1194

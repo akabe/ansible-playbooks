@@ -1,0 +1,21 @@
+---
+
+- name: copy config files
+  template:
+    src: client.conf
+    dest: "{{ openvpn_home }}/client.conf"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+
+- name: copy key files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ openvpn_home }}/{{ item }}"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    mode: 0600
+  with_items:
+    - ca.crt
+    - client.key
+    - client.crt
+    - ta.key

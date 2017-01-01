@@ -4,6 +4,3 @@ easyrsa_version: 3.0.1
 easyrsa_src_dir: "/usr/local/src/easy-rsa-{{ easyrsa_version }}"
 easyrsa_home: "{{ openvpn_home }}/easyrsa3"
 easyrsa_pki_dir: "{{ easyrsa_home }}/pki"
-
-easyrsa_master_key_password: MyMasterPassword
-easyrsa_master_key_common_name: "Easy-RSA CA"

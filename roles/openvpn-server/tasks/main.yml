@@ -1,5 +1,90 @@
 ---
 
+- yum: name={{ item }} state=present
+  with_items:
+    - expect
+
+- name: build ca
+  command: |-
+    expect -c \
+    'set timeout 5
+    spawn ./easyrsa build-ca
+    expect "pass phrase:"
+    send "{{ openvpn_ca_password }}\n"
+    expect "pass phrase:"
+    send "{{ openvpn_ca_password }}\n"
+    expect "\[Easy-RSA CA\]:"
+    send "{{ openvpn_ca_common_name }}\n"
+    expect eof
+    exit 0'
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/private/ca.key"
+  become_user: "{{ openvpn_user }}"
+
+- name: build server key
+  command: |-
+    expect -c \
+    'set timeout 5
+    spawn ./easyrsa build-server-full server nopass
+    expect "private/ca.key:"
+    send "{{ openvpn_ca_password }}\n"
+    expect "Data Base Updated"
+    expect eof
+    exit 0'
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/issued/server.crt"
+  become_user: "{{ openvpn_user }}"
+
+- name: build client keys
+  command: |-
+    expect -c \
+    'set timeout 5
+    spawn ./easyrsa build-client-full "{{ item.name }}"
+    expect "pass phrase:"
+    send "{{ item.password }}\n"
+    expect "pass phrase:"
+    send "{{ item.password }}\n"
+    expect "private/ca.key:"
+    send "{{ openvpn_ca_password }}\n"
+    expect "Data Base Updated"
+    expect eof
+    exit 0'
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/issued/{{ item.name }}.crt"
+  become_user: "{{ openvpn_user }}"
+  with_items: "{{ openvpn_client_keys }}"
+
+# - name: transfer client keys
+#   local_action: command
+#     scp {{ ansible_ssh_common_args }}
+#         {{ inventory_hostname }}:{{ easyrsa_pki_dir }}/issued/{{ item.name }}.crt
+#         {{ item.host }}:{{ openvpn_home }}/{{ item.name }}.crt
+#   become: false
+#   with_items: "{{ openvpn_client_keys }}"
+
+- name: generate Diffie Hellman parameter
+  command: ./easyrsa gen-dh
+  args:
+    chdir: "{{ easyrsa_home }}"
+    creates: "{{ easyrsa_pki_dir }}/dh.pem"
+  become_user: "{{ openvpn_user }}"
+
+- name: copy keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ openvpn_home }}"
+    owner: "{{ openvpn_user }}"
+    group: "{{ openvpn_group }}"
+    remote_src: true
+  with_items:
+    - "{{ easyrsa_pki_dir }}/ca.crt"
+    - "{{ easyrsa_pki_dir }}/dh.pem"
+    - "{{ easyrsa_pki_dir }}/private/server.key"
+    - "{{ easyrsa_pki_dir }}/issued/server.crt"
+
 - name: generate ta.key
   command: "{{ openvpn_prefix }}/sbin/openvpn --genkey --secret {{ openvpn_home }}/ta.key"
   args:
