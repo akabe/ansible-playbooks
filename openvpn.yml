@@ -1,12 +1,17 @@
 ---
 
+- hosts: ca
+  gather_facts: false
+  roles:
+    - private-ca
+
 - hosts: openvpn-server
   gather_facts: true
   become: true
   roles:
     - openvpn
-    - easy-rsa
     - openvpn-server
+#    - easy-rsa
 
 - hosts: openvpn-client
   gather_facts: true

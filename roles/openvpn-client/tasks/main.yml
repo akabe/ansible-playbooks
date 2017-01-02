@@ -6,16 +6,49 @@
     dest: "{{ openvpn_home }}/client.conf"
     owner: "{{ openvpn_user }}"
     group: "{{ openvpn_group }}"
+    mode: "0600"
 
-- name: copy key files
+- name: create key
+  command: |
+    openssl req -new -newkey rsa:2048 -utf8 -batch \
+      -passout "pass:{{ openvpn_client_password }}" \
+      -subj "/CN={{ openvpn_client_name }}" \
+      -out "{{ openvpn_client_csr_file }}" \
+      -keyout "{{ openvpn_client_key_file }}"
+  args:
+    creates: "{{ openvpn_client_csr_file }}"
+  become_user: "{{ openvpn_user }}"
+
+- name: fetch csr
+  fetch:
+    src: "{{ openvpn_client_csr_file }}"
+    dest: /tmp
+  register: openvpn_client_csr_fetch_result
+
+- name: sign csr
+  command: |-
+    openssl x509 -req -days 3650 -CAcreateserial \
+      -extfile "{{ private_ca_home }}/client.ext" \
+      -CA "{{ private_ca_crt_file }}" \
+      -CAkey "{{ private_ca_key_file }}" \
+      -passin "pass:PrivateCAPassword" \
+      -in "{{ openvpn_client_csr_fetch_result.dest }}" \
+      -out "{{ openvpn_client_csr_fetch_result.dest }}.crt"
+  args:
+    creates: "{{ openvpn_client_csr_fetch_result.dest }}.crt"
+  delegate_to: localhost
+  become: false
+
+- name: copy crt
   copy:
-    src: "{{ item }}"
-    dest: "{{ openvpn_home }}/{{ item }}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: "{{ openvpn_user }}"
     group: "{{ openvpn_group }}"
-    mode: 0600
+    mode: "0600"
   with_items:
-    - ca.crt
-    - client.key
-    - client.crt
-    - ta.key
+    - src: "{{ openvpn_client_csr_fetch_result.dest }}.crt"
+      dest: "{{ openvpn_client_crt_file }}"
+    - src: "{{ private_ca_crt_file }}"
+      dest: "{{ openvpn_home }}/ca.crt"
+  become_user: "{{ openvpn_user }}"

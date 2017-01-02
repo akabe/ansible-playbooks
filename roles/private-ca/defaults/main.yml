@@ -1,0 +1,8 @@
+---
+
+private_ca_password: PrivateCAPassword
+private_ca_home: "{{ lookup('env','HOME') + '/.openssl' }}"
+private_ca_subject: "/C=JP/ST=Tokyo/L=Tokyo/O=Example Ltd./OU=Technical dept./CN=secure.example.com"
+private_ca_key_file: "{{ private_ca_home }}/ca.key"
+private_ca_csr_file: "{{ private_ca_home }}/ca.csr"
+private_ca_crt_file: "{{ private_ca_home }}/ca.crt"

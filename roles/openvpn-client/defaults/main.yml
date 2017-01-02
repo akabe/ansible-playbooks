@@ -3,3 +3,9 @@
 openvpn_servers:
   - host: 52.196.253.28
     port: 1194
+
+openvpn_client_name: client01
+openvpn_client_password: MyClientPassword
+openvpn_client_key_file: "{{ openvpn_home }}/client.key"
+openvpn_client_csr_file: "{{ openvpn_home }}/client.csr"
+openvpn_client_crt_file: "{{ openvpn_home }}/client.crt"

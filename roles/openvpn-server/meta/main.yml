@@ -2,4 +2,5 @@
 
 dependencies:
   - role: openvpn
+  - role: private-ca
   - role: easy-rsa

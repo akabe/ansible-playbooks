@@ -2,3 +2,4 @@
 
 dependencies:
   - role: openvpn
+  - role: private-ca

@@ -1,0 +1,43 @@
+---
+
+- name: create openssl directory
+  file:
+    state: directory
+    path: "{{ private_ca_home }}"
+    mode: 0700
+  delegate_to: localhost
+  become: false
+
+- name: put x509v3 ext file
+  copy:
+    src: "{{ item }}"
+    dest: "{{ private_ca_home }}/{{ item }}"
+  with_items:
+    - ca.ext
+    - server.ext
+    - client.ext
+  delegate_to: localhost
+  become: false
+
+- name: create key
+  command: |
+    openssl req -new -newkey rsa:2048 -utf8 -batch \
+      -passout "pass:{{ private_ca_password }}" \
+      -keyout "{{ private_ca_key_file }}" \
+      -out "{{ private_ca_csr_file }}"
+  args:
+    creates: "{{ private_ca_key_file }}"
+  delegate_to: localhost
+  become: false
+
+- name: create cert
+  command: |
+    openssl req -new -x509 \
+      -passin "pass:{{ private_ca_password }}" \
+      -subj "{{ private_ca_subject }}" \
+      -key "{{ private_ca_key_file }}" \
+      -out "{{ private_ca_crt_file }}"
+  args:
+    creates: "{{ private_ca_crt_file }}"
+  delegate_to: localhost
+  become: false

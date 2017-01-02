@@ -1,9 +1,6 @@
 ---
 
-openvpn_ca_password: MyMasterPassword
-openvpn_ca_common_name: "Easy-RSA CA"
-
-openvpn_client_keys:
-  - host: 52.68.101.23
-    name: client01
-    password: MyClient01Password
+openvpn_server_key_file: "{{ openvpn_home }}/server.key"
+openvpn_server_csr_file: "{{ openvpn_home }}/server.req"
+openvpn_server_crt_file: "{{ openvpn_home }}/server.crt"
+openvpn_dhparam_file: "{{ openvpn_home }}/dh.pem"
