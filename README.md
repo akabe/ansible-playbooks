@@ -7,10 +7,9 @@ My ansible playbooks
 ### Apache Zeppelin
 
 [Apache Zeppelin](https://zeppelin.apache.org/) is a web-based dashboard for data analytics.
-This playbook constructs a stand-alone Zeppelin server, i.e., not clustered.
 
 ```
-ansible-playbook -i inventory zeppelin-standalone.yml
+ansible-playbook -i inventory zeppelin.yml
 ```
 
 ### JupyterHub
@@ -35,3 +34,5 @@ ansible-playbook -i inventory jupyterhub.yml
 - `roles/zeppelin`
   - Install [Zeppelin](https://zeppelin.apache.org/) (without interpreters, but they can be net-installed)
   - Add the JDBC MySQL driver
+- `roles/jupyterhub`
+  - Install [JupyterHub](https://jupyterhub.readthedocs.io/en/latest/)
