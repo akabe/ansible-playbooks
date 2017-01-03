@@ -1,5 +1,8 @@
 [zeppelin]
 10.0.0.1
 
+[jupyterhub]
+10.0.0.2
+
 [all:vars]
 ansible_ssh_common_args='-F ssh_config'

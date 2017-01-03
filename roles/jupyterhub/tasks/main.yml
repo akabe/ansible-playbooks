@@ -1,0 +1,67 @@
+---
+
+- name: create user group
+  group: name={{ jupyterhub_group }}
+
+- name: create user
+  user:
+    name: "{{ jupyterhub_user }}"
+    group: "{{ jupyterhub_group }}"
+    shell: /sbin/nologin
+    createhome: false
+
+- name: yum upgrade
+  yum: name=* state=latest
+
+- name: yum install
+  yum: name={{ item }} state=present enablerepo=epel
+  with_items:
+    - git
+    - npm
+    - python35
+    - python35-pip
+
+- name: pip upgrade
+  pip: name=pip state=latest executable=/usr/local/bin/pip3.5
+
+- name: pip install
+  pip: name={{ item }} state=present executable=/usr/local/bin/pip3.5
+  with_items:
+    - jupyterhub
+    - git+https://github.com/jupyter/sudospawner#egg=sudospawner
+
+- name: npm install
+  npm: name=configurable-http-proxy state=present global=yes
+
+- name: allow 'sudo sudospawner'
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^{{ jupyterhub_user }}*'
+    line: '{{ jupyterhub_user }} ALL=/usr/local/bin/sudospawner'
+
+- name: create jupyterhub home
+  file:
+    state: directory
+    path: "{{ jupyterhub_home }}"
+    owner: "{{ jupyterhub_user }}"
+    group: "{{ jupyterhub_group }}"
+    mode: "0700"
+
+- name: put config file
+  template:
+    src: jupyterhub_config.py
+    dest: "{{ jupyterhub_config_file }}"
+    owner: "{{ jupyterhub_user }}"
+    group: "{{ jupyterhub_group }}"
+    mode: "0400"
+  notify: restart jupyterhub
+
+- name: create service
+  template:
+    src: jupyterhub.init.d
+    dest: "/etc/init.d/jupyterhub"
+    mode: "0755"
+  notify: restart jupyterhub
+
+- name: start service
+  service: name=jupyterhub state=started enabled=yes

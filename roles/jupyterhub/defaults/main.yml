@@ -1,0 +1,8 @@
+---
+
+jupyterhub_user: jupyterhub
+jupyterhub_group: jupyterhub
+
+jupyterhub_home: /etc/jupyterhub
+jupyterhub_config_file: "{{ jupyterhub_home }}/jupyterhub_config.py"
+jupyterhub_pid_file: /var/lock/subsys/jupyterhub.pid

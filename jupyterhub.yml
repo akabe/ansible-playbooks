@@ -1,0 +1,7 @@
+---
+
+- hosts: jupyterhub
+  gather_facts: false
+  become: true
+  roles:
+    - jupyterhub

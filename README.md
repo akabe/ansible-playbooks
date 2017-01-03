@@ -13,6 +13,16 @@ This playbook constructs a stand-alone Zeppelin server, i.e., not clustered.
 ansible-playbook -i inventory zeppelin-standalone.yml
 ```
 
+### JupyterHub
+
+[JupyterHub](https://jupyterhub.readthedocs.io/en/latest/) is a multi-user
+version of [Jupyter](https://jupyter-notebook.readthedocs.io/en/latest/)
+(iPython notebook), a web-based document tool for data analytics.
+
+```
+ansible-playbook -i inventory jupyterhub.yml
+```
+
 ## Roles
 
 - `roles/linux-tuning`
