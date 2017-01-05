@@ -5,10 +5,19 @@
 
 - name: create user
   user:
-    name: "{{ jupyterhub_user }}"
+    name: "{{ item.name }}"
     group: "{{ jupyterhub_group }}"
-    shell: /sbin/nologin
-    createhome: false
+    password: "{{ item.password }}"
+  with_items: "{{ jupyterhub_users }}"
+
+- name: create notebook directory
+  file:
+    state: directory
+    path: "/home/{{ item.name }}/{{ jupyterhub_notebook_dir }}"
+    owner: "{{ item.name }}"
+    group: "{{ jupyterhub_group }}"
+    mode: "0700"
+  with_items: "{{ jupyterhub_users }}"
 
 - name: yum upgrade
   yum: name=* state=latest
@@ -22,10 +31,10 @@
     - python35-pip
 
 - name: pip upgrade
-  pip: name=pip state=latest executable=/usr/local/bin/pip3.5
+  pip: name=pip state=latest executable=/usr/local/bin/pip3
 
 - name: pip install
-  pip: name={{ item }} state=present executable=/usr/local/bin/pip3.5
+  pip: name={{ item }} state=present executable=/usr/local/bin/pip3
   with_items:
     - jupyterhub
     - git+https://github.com/jupyter/sudospawner#egg=sudospawner
@@ -36,14 +45,14 @@
 - name: allow 'sudo sudospawner'
   lineinfile:
     dest: /etc/sudoers
-    regexp: '^{{ jupyterhub_user }}*'
-    line: '{{ jupyterhub_user }} ALL=/usr/local/bin/sudospawner'
+    regexp: "^{{ jupyterhub_init_user }}*"
+    line: "{{ jupyterhub_init_user }} ALL=({{ jupyterhub_whitelist_users | join(', ') }}) NOPASSWD: /usr/local/bin/sudospawner"
 
 - name: create jupyterhub home
   file:
     state: directory
     path: "{{ jupyterhub_home }}"
-    owner: "{{ jupyterhub_user }}"
+    owner: "{{ jupyterhub_init_user }}"
     group: "{{ jupyterhub_group }}"
     mode: "0700"
 
@@ -51,7 +60,7 @@
   template:
     src: jupyterhub_config.py
     dest: "{{ jupyterhub_config_file }}"
-    owner: "{{ jupyterhub_user }}"
+    owner: "{{ jupyterhub_init_user }}"
     group: "{{ jupyterhub_group }}"
     mode: "0400"
   notify: restart jupyterhub

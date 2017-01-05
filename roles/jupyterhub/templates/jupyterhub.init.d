@@ -7,10 +7,7 @@ pid_file="{{ jupyterhub_pid_file }}"
 
 start() {
     echo -n "Starting JupyterHub       "
-    sudo -u "{{ jupyterhub_user }}" \
-         /usr/local/bin/jupyterhub \
-         --config={{ jupyterhub_config_file }} \
-         --JupyterHub.spawner_class=sudospawner.SudoSpawner &
+    sudo -u "{{ jupyterhub_init_user }}" /usr/local/bin/jupyterhub --config={{ jupyterhub_config_file }} &
     echo "$!" > $pid_file
     echo "[ OK ]"
 }

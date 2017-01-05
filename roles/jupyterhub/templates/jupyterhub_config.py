@@ -54,7 +54,7 @@
 #  - takes two arguments: (handler, data),
 #    where `handler` is the calling web.RequestHandler,
 #    and `data` is the POST form data from the login page.
-#c.JupyterHub.authenticator_class = 'jupyterhub.auth.PAMAuthenticator'
+c.JupyterHub.authenticator_class = 'jupyterhub.auth.PAMAuthenticator'
 
 ## The base URL of the entire application
 c.JupyterHub.base_url = '/'
@@ -87,7 +87,7 @@ c.JupyterHub.base_url = '/'
 #c.JupyterHub.config_file = 'jupyterhub_config.py'
 
 ## DEPRECATED: does nothing
-#c.JupyterHub.confirm_no_ssl = False
+c.JupyterHub.confirm_no_ssl = True
 
 ## Number of days for a login cookie to be valid. Default is two weeks.
 #c.JupyterHub.cookie_max_age_days = 14
@@ -212,7 +212,9 @@ c.JupyterHub.db_url = 'sqlite:///{{ jupyterhub_home }}/jupyterhub.sqlite'
 ## The class to use for spawning single-user servers.
 #
 #  Should be a subclass of Spawner.
-#c.JupyterHub.spawner_class = 'jupyterhub.spawner.LocalProcessSpawner'
+c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
+
+c.SudoSpawner.sudospawner_path = '/usr/local/bin/sudospawner'
 
 ## Path to SSL certificate file for the public facing interface of the proxy
 #
@@ -409,7 +411,7 @@ c.JupyterHub.db_url = 'sqlite:///{{ jupyterhub_home }}/jupyterhub.sqlite'
 #
 #  Note that this does *not* prevent users from accessing files outside of this
 #  path! They can do so with many other means.
-c.Spawner.notebook_dir = '~/jupyterhub_notebook'
+c.Spawner.notebook_dir = '~/{{ jupyterhub_notebook_dir }}'
 
 ## An HTML form for options a user can specify on launching their server.
 #
@@ -495,7 +497,7 @@ c.Spawner.notebook_dir = '~/jupyterhub_notebook'
 #  Admin access should be treated the same way root access is.
 #
 #  Defaults to an empty set, in which case no user has admin access.
-#c.Authenticator.admin_users = set()
+c.Authenticator.admin_users = {'{{ jupyterhub_admin_users | join("', '") }}'}
 
 ## Dictionary mapping authenticator usernames to JupyterHub users.
 #
@@ -517,7 +519,7 @@ c.Spawner.notebook_dir = '~/jupyterhub_notebook'
 #  restrictions the authenticator has in place.
 #
 #  If empty, does not perform any additional restriction.
-#c.Authenticator.whitelist = set()
+c.Authenticator.whitelist = {'{{ jupyterhub_whitelist_users | join("', '") }}'}
 
 #------------------------------------------------------------------------------
 # LocalAuthenticator(Authenticator) configuration
