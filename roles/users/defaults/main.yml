@@ -1,0 +1,8 @@
+---
+
+## You must re-define this variable:
+users:
+  - name: user1
+    group: wheel  # allow sudo
+    shell: /bin/bash
+    ssh_public_key: "{{ lookup('file', 'id_rsa.pub') }}"

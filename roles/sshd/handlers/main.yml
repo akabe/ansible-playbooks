@@ -1,0 +1,19 @@
+---
+
+- name: restart ssh
+  service: name=ssh state=restarted enabled=yes
+
+- name: change ssh port
+  set_fact:
+    ansible_port: "{{ sshd_port }}"
+
+- name: wait to start ssh
+  shell:
+    for i in $(seq 1 {{ timeout }}); do
+      ssh {{ ansible_ssh_common_args }} -p {{ sshd_port }} {{ inventory_hostname }} hostname && break;
+      sleep 1;
+    done
+  vars:
+    timeout: 1000
+  delegate_to: 127.0.0.1
+  become: false

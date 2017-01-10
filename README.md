@@ -24,6 +24,13 @@ ansible-playbook -i inventory jupyterhub.yml
 
 ## Roles
 
+- `roles/users`
+  - Add users
+  - Authorize SSH keys
+  - You **must** override variable `users`!
+- `roles/sshd`
+  - Configure SSH daemon
+  - Restart SSH daemon
 - `roles/linux-tuning`
   - Upgrade yum packages
   - Stop non-essential services (`sendmail`, `crond`, etc.)

@@ -1,0 +1,13 @@
+---
+
+- name: put sshd_config
+  template:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0400"
+  notify:
+    - restart ssh
+    - change ssh port
+    - wait to start ssh

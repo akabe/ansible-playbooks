@@ -1,0 +1,4 @@
+---
+
+sshd_port: 65522
+sshd_users: "{{ users | selectattr('ssh_public_key', 'defined') | map(attribute='name') | list }}"

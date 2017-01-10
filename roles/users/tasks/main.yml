@@ -1,0 +1,26 @@
+---
+
+- name: create user groups
+  group:
+    name: "{{ item }}"
+  with_items: "{{ users | selectattr('group', 'defined') | map(attribute='group') | list }}"
+
+- name: create users
+  user:
+    name: "{{ item.name }}"
+    group: "{{ item.group | default(omit) }}"
+    shell: "{{ item.shell | default(omit) }}"
+  with_items: "{{ users }}"
+
+- name: add authorized keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_public_key }}"
+  with_items: "{{ users | selectattr('ssh_public_key', 'defined') | list }}"
+
+- name: allow sudo
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "^%.*ALL$"
+    line: "%wheel\tALL=NOPASSWD: ALL"
+    mode: "0400"
