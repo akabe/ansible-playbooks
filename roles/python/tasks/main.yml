@@ -1,0 +1,42 @@
+---
+
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: download python
+  get_url:
+    url: "{{ python_src_url }}"
+    dest: "/tmp/Python-{{ python_version }}.tar.xz"
+    checksum: "{{ python_src_checksum }}"
+  register: python_download_result
+
+- name: unarchive python
+  unarchive:
+    src: "{{ python_download_result.dest }}"
+    dest: "{{ python_src_dir }}"
+    remote_src: true
+
+- name: configure
+  command: ./configure --prefix={{ python_prefix }} --with-tcltk
+  args:
+    chdir: "{{ python_home }}"
+    creates: "{{ python_home }}/Makefile"
+
+- name: make
+  command: make
+  args:
+    chdir: "{{ python_home }}"
+    creates: "{{ python_home }}/python"
+
+- name: make install
+  command: make install
+  args:
+    chdir: "{{ python_home }}"
+    creates: "{{ python_command }}"
+
+- name: pip install
+  pip:
+    state: present
+    name: "{{ item }}"
+    executable: "{{ python_prefix }}/bin/pip3"
+  with_items: "{{ python_pip_packages }}"

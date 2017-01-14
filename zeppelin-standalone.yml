@@ -3,6 +3,19 @@
 - hosts: zeppelin
   gather_facts: true
   become: true
+  vars:
+    python_pip_packages:
+      - numpy
+      - scipy
+      - sympy
+      - statsmodels
+      - scikit-learn
+      - pandas
+      - matplotlib
+      - plotly
+      - seaborn
+      - networkx
+      - requests
   roles:
     - linux-tuning
     - swapfile

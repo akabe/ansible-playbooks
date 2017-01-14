@@ -129,7 +129,7 @@
       "name": "python",
       "group": "python",
       "properties": {
-        "zeppelin.python": "python"
+        "zeppelin.python": "{{ python_command }}"
       },
       "interpreterGroup": [
         {

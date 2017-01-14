@@ -1,0 +1,24 @@
+---
+
+# For tk-devel required by tkinter
+- name: add centos6 repo
+  yum_repository:
+    file: centos6
+    name: centos6
+    description: CentOS6 base repository
+    mirrorlist: "http://mirrorlist.centos.org/?release=6&arch=x86_64&repo=os"
+    gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-6
+    gpgcheck: yes
+    enabled: false
+
+- name: yum upgrade
+  yum: name=* state=latest
+
+- name: yum install
+  yum: name={{ item }} state=present enablerepo=centos6
+  with_items:
+    - gcc
+    - gcc-c++
+    - openssl-devel
+    - tcl-devel
+    - tk-devel

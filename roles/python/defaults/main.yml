@@ -1,0 +1,10 @@
+---
+
+python_version: 3.5.2
+python_src_url: "https://www.python.org/ftp/python/{{ python_version }}/Python-{{ python_version }}.tar.xz"
+python_src_checksum: sha256:0010f56100b9b74259ebcd5d4b295a32324b58b517403a10d1a2aa7cb22bca40
+python_src_dir: /usr/local/src
+python_prefix: /usr/local
+python_command: "{{ python_prefix }}/bin/python3.5"
+python_home: "{{ python_src_dir }}/Python-{{ python_version }}"
+python_pip_packages: []

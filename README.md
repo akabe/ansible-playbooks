@@ -41,5 +41,8 @@ ansible-playbook -i inventory jupyterhub.yml
 - `roles/zeppelin`
   - Install [Zeppelin](https://zeppelin.apache.org/) (without interpreters, but they can be net-installed)
   - Add the JDBC MySQL driver
+- `roles/python`
+  - Build and install python
+  - You can specify `python_pip3_packages` to install pip packages
 - `roles/jupyterhub`
   - Install [JupyterHub](https://jupyterhub.readthedocs.io/en/latest/)
