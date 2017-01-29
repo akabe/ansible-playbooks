@@ -1,0 +1,4 @@
+---
+
+- name: restart iocaml
+  service: name=iocaml state=restarted

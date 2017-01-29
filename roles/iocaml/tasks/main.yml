@@ -1,0 +1,41 @@
+---
+
+- name: install packages
+  yum: name={{ item }} state=latest enablerepo=epel
+  with_items:
+    - zeromq3-devel
+
+- name: install iocaml
+  command: opam install -y {{ item }}
+  args:
+    creates: "{{ ocaml_opam_home }}/install/{{ item }}.install"
+  become: false
+  with_items:
+    - ocamlfind
+    - iocaml
+
+- name: make notebook directory
+  file:
+    state: directory
+    path: "{{ iocaml_notebook_dir }}"
+  become: false
+
+- name: put setting files
+  template:
+    src: "{{ item | basename }}"
+    dest: "{{ item }}"
+  become: false
+  with_items:
+    - "{{ ocaml_opam_home }}/share/iocamljs-kernel/profile/static/custom/custom.js"
+    - "~/.iocamlinit"
+    - "{{ ocaml_opam_home }}/lib/topfind"
+
+- name: register iocaml daemon
+  template:
+    src: iocaml-daemon.sh
+    dest: /etc/init.d/iocaml
+    mode: 0755
+  notify: restart iocaml
+
+- name: start iocaml
+  service: name=iocaml state=started enabled=yes

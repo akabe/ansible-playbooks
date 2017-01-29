@@ -1,0 +1,23 @@
+---
+
+- hosts: iocaml
+  gather_facts: true
+  become: true
+  roles:
+    - swapfile
+    - iocaml
+  #   iocaml_profile_name: iocaml
+  #   iocaml_profile_path: "~/.ipython/profile_{{ iocaml_profile_name }}"
+  #   iocaml_profile_src_path: "{{ ocaml_opam_home }}/share/iocamljs-kernel/profile"
+  # tasks:
+  #   - name: make iocaml profile
+  #     command: ipython profile create {{ iocaml_profile_name }}
+  #     args:
+  #       creates: "{{ iocaml_profile_path }}"
+  #     become: false
+
+  #   - name: create notebook directory
+  #     file:
+  #       state: directory
+  #       path: "~/notebooks"
+  #     become: false

@@ -1,0 +1,6 @@
+---
+
+iocaml_user: ec2-user
+iocaml_log_path: "/var/log/iocaml.log"
+iocaml_notebook_dir: "/home/{{ iocaml_user }}/notebooks"
+iocaml_options: "-v -completion -ip 0.0.0.0 -js full -serve '/home/ec2-user/.opam/4.04.0' '{{ iocaml_notebook_dir }}'"

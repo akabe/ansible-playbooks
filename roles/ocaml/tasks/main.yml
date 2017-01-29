@@ -1,0 +1,29 @@
+---
+
+- name: yum install
+  yum: name={{ item }} state=latest enablerepo=epel
+  with_items:
+    - m4
+    - patch
+    - git
+    - gcc
+    - libffi-devel
+
+- name: install opam
+  get_url:
+    url: "https://github.com/ocaml/opam/releases/download/{{ ocaml_opam_version }}/opam-{{ ocaml_opam_version }}-{{ ansible_architecture }}-Linux"
+    dest: /usr/local/bin/opam
+    mode: 0755
+
+- name: install ocaml
+  command: opam init -a -y --comp {{ ocaml_version }}
+  args:
+    creates: "{{ ocaml_opam_home }}"
+  become: false
+
+- name: opam install
+  command: opam install -y {{ item }}
+  args:
+    creates: "{{ ocaml_opam_home }}/install/{{ item }}.install"
+  become: false
+  with_items: "{{ ocaml_opam_packages }}"
