@@ -1,0 +1,9 @@
+---
+
+jupyter_user: ec2-user
+jupyter_user_home: "/home/{{ jupyter_user }}"
+jupyter_port: 8888
+jupyter_password: sha1:6df3b21c778d:7913dff273fdaf807fe49055803cb9c8cab262db # password1234
+jupyter_log_file: /var/log/jupyter.log
+jupyter_conf_path: "{{ jupyter_user_home }}/.jupyter/jupyter_notebook_config.py"
+jupyter_notebook_dir: "{{ jupyter_user_home }}/notebooks"

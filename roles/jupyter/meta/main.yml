@@ -1,0 +1,6 @@
+---
+
+dependencies:
+  - role: python
+    python_pip_packages:
+      - jupyter

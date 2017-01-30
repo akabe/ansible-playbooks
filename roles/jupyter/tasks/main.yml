@@ -1,0 +1,27 @@
+---
+
+- name: create directory
+  file:
+    state: directory
+    path: "{{ item }}"
+  become: false
+  with_items:
+    - "{{ jupyter_conf_path | dirname }}"
+    - "{{ jupyter_notebook_dir }}"
+
+- name: put config file
+  template:
+    src: jupyter_notebook_config.py
+    dest: "{{ jupyter_conf_path }}"
+  become: false
+  notify: restart jupyter
+
+- name: register daemon
+  template:
+    src: jupyter-daemon.sh
+    dest: /etc/init.d/jupyter
+    mode: 0755
+  notify: restart jupyter
+
+- name: start jupyter
+  service: name=jupyter state=started enabled=yes
