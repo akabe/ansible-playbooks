@@ -3,4 +3,15 @@
 dependencies:
   - role: python
     python_pip_packages:
+      - numpy
+      - scipy
+      - sympy
+      - statsmodels
+      - scikit-learn
+      - pandas
+      - matplotlib
+      - plotly
+      - seaborn
+      - networkx
+      - requests
       - jupyter
