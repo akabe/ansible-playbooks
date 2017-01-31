@@ -1,5 +1,33 @@
 ---
 
+- name: yum install
+  yum: name={{ item }} state=present
+  with_items:
+    - mysql-devel
+    - postgresql-devel
+
+- name: pip install
+  pip:
+    state: present
+    name: "{{ item }}"
+    executable: "{{ python_prefix }}/bin/pip3"
+  with_items:
+    - configparser
+    - numpy
+    - scipy
+    - sympy
+    - statsmodels
+    - scikit-learn
+    - pandas
+    - matplotlib
+    - plotly
+    - seaborn
+    - networkx
+    - requests
+    - jupyter
+    - mysqlclient
+    - psycopg2
+
 - name: create directory
   file:
     state: directory

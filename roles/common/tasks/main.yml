@@ -1,0 +1,27 @@
+---
+
+- name: chmod /usr/local/src
+  file:
+    state: directory
+    path: /usr/local/src
+    mode: 0777
+
+- name: yum update
+  yum: name=* state=latest
+
+- name: yum install
+  yum: name={{ item }} state=present
+  with_items:
+    - autoconf
+    - automake
+    - cmake
+    - gcc
+    - gcc-c++
+    - jq
+    - m4
+    - make
+    - ncurses-devel
+    - openssl-devel
+    - patch
+    - unzip
+    - xz
