@@ -24,6 +24,7 @@
     - seaborn
     - networkx
     - requests
+    - aiohttp
     - jupyter
     - mysqlclient
     - psycopg2
