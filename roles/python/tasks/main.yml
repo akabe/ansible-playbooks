@@ -17,22 +17,43 @@
     remote_src: true
 
 - name: configure
-  command: ./configure --prefix={{ python_prefix }} --with-tcltk
+  command: ./configure --prefix={{ python_prefix }} --enable-shared --with-tcltk
   args:
     chdir: "{{ python_home }}"
     creates: "{{ python_home }}/Makefile"
 
 - name: make
-  command: make
+  command: make -j 4
   args:
     chdir: "{{ python_home }}"
     creates: "{{ python_home }}/python"
 
 - name: make install
-  command: make install
+  command: make install -j 4
   args:
     chdir: "{{ python_home }}"
     creates: "{{ python_command }}"
+
+- name: add path to libpython
+  lineinfile:
+    dest: /etc/ld.so.conf
+    state: present
+    line: '{{ python_prefix }}/lib'
+  register: python_ld_conf_result
+
+- name: ldconfig
+  command: ldconfig
+  when: python_ld_conf_result|changed
+
+- name: add python version
+  lineinfile:
+    dest: '/usr/share/cmake/Modules/{{ item }}'
+    state: present
+    regexp: 'set\(_PYTHON3_VERSIONS [0-9\. ]*\)'
+    line: 'set(_PYTHON3_VERSIONS 3.5 3.4 3.3 3.2 3.1 3.0)'
+  with_items:
+    - FindPythonInterp.cmake
+    - FindPythonLibs.cmake
 
 - name: pip install
   pip:
